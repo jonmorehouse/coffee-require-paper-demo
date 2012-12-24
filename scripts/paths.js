@@ -3,14 +3,26 @@
 define(['paper'], function(paper) {
   var drawing;
   drawing = function(canvas) {
-    var path, start;
+    var circle, path, pathStyle, x, _height, _i, _len, _ref;
     paper.setup(canvas);
+    pathStyle = {
+      fillColor: "orange",
+      strokeColor: "orange",
+      strokeWidth: 5
+    };
     path = new paper.Path();
+    path.style = pathStyle;
     path.strokeColor = "blue";
-    start = new paper.Point(0, 0);
-    path.moveTo(start);
-    path.add(new paper.Point(25, 25));
-    path.add(new paper.Point(50, 50));
+    path.segments = [];
+    path.add(paper.view.bounds.bottomLeft);
+    _ref = [0, paper.view.size.width];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      x = _ref[_i];
+      _height = Math.sin(x / paper.view.size.width) * paper.view.size.height;
+      path.add(new paper.Point(x, _height));
+    }
+    circle = new paper.Path.Circle(100, 20);
+    circle.fillColor = "blue";
     return paper.view.draw();
   };
   return {

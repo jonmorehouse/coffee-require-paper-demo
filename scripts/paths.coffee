@@ -4,21 +4,36 @@ define ['paper'], (paper) ->
 
 		paper.setup canvas
 
+		pathStyle = 
+
+			fillColor: "orange"
+			strokeColor: "orange"
+			strokeWidth: 5
+
 		path = new paper.Path()
 
+		path.style = pathStyle
+
 		path.strokeColor = "blue"
+		path.segments = []
 
-		start = new paper.Point 0,0
+		path.add paper.view.bounds.bottomLeft
 
-		path.moveTo start
+		for x in [0, paper.view.size.width]
+				
+			# max_height * ratio of x for sing
+			_height = Math.sin(x / paper.view.size.width) * paper.view.size.height
+			path.add new paper.Point x, _height
 
-		path.add new paper.Point 25,25
 
-		path.add new paper.Point 50,50
+
+		circle = new paper.Path.Circle 100, 20
+		circle.fillColor = "blue"
 
 		paper.view.draw()
 
-	# return functions from this!
-	# test: test,
+
+
+	# RETURN VALUE!
 	drawing: drawing
 
