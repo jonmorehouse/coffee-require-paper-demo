@@ -6,9 +6,7 @@ define ['paper'], (paper) ->
 
 		pathStyle = 
 
-			fillColor: "orange"
-			strokeColor: "orange"
-			strokeWidth: 5
+			strokeWidth: 10
 
 		path = new paper.Path()
 

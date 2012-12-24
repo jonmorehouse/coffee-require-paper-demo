@@ -6,9 +6,7 @@ define(['paper'], function(paper) {
     var circle, path, pathStyle, x, _height, _i, _len, _ref;
     paper.setup(canvas);
     pathStyle = {
-      fillColor: "orange",
-      strokeColor: "orange",
-      strokeWidth: 5
+      strokeWidth: 10
     };
     path = new paper.Path();
     path.style = pathStyle;
