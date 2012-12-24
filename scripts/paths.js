@@ -3,10 +3,26 @@
 define(['paper'], function(paper) {
   var drawing;
   drawing = function(canvas) {
-    var circle, path, pathStyle, x, _height, _i, _len, _ref;
+    var circle, path, pathStyle, tool, x, _height, _i, _len, _ref;
     paper.setup(canvas);
     pathStyle = {
-      strokeWidth: 10
+      strokeWidth: 5
+    };
+    circle = new paper.Path.Circle(100, 40);
+    circle.fillColor = "rgb(100,200,255)";
+    circle.strokeWidth = 200;
+    tool = new paper.Tool();
+    paper.Tool.maxDistance = 100;
+    tool.onMouseDown = function() {
+      return tool.onMouseDrag = function() {
+        return console.log("HELLO DRAG");
+      };
+    };
+    paper.onFrame = function(event) {
+      var destination;
+      console.log("HELLO WORLD");
+      destination = paper.Point.random() * paper.view.size;
+      return circle.moveTo(destination);
     };
     path = new paper.Path();
     path.style = pathStyle;
