@@ -1,62 +1,44 @@
-define ['paper'], (paper) ->
+define ['paper', 'rectangle'], (paper, rectangle) ->
+
+	test = () ->
+
+		alert "HELLO WORLD"
 
 	drawing = (canvas) ->
 
 		paper.setup canvas
 
+		# create a basic rectangle
+		# _rect = new rectangle 0, 0, 200, 200
 
-
-		pathStyle = 
-
-			strokeWidth: 5
-
-		circle = new paper.Path.Circle 100, 40
-		circle.fillColor = "rgb(100,200,255)"
-		circle.strokeWidth = 200
-
-
-		tool = new paper.Tool()
-		paper.Tool.maxDistance = 100
-
-		tool.onMouseDown = () ->
-
-
-			tool.onMouseDrag = () ->
-
-				console.log "HELLO DRAG"
-
-		paper.onFrame = (event) ->
-
-			console.log "HELLO WORLD"
-			destination = paper.Point.random() * paper.view.size 
-
-			circle.moveTo destination
-
+		..test
+		alert "HELLO WORLD"
 
 		path = new paper.Path()
 
-		path.style = pathStyle
+		path.style = 
 
-		path.strokeColor = "blue"
-		path.segments = []
+			fillColor: "rgb(255,36,36)"
+			strokeColor: "black"
+			strokeWidth: 8
 
-		path.add paper.view.bounds.bottomLeft
+		path.add new paper.Point 50, 50,
+		path.add new paper.Point 50, 100
+		path.add new paper.Point 100, 50
+		path.add new paper.Point 100, 100
 
-		for x in [0, paper.view.size.width]
-				
-			# max_height * ratio of x for sing
-			_height = Math.sin(x / paper.view.size.width) * paper.view.size.height
-			path.add new paper.Point x, _height
+		path.closed = true
+
+		# create a copy and move it!
+		# copy = path.clone()
+
+		# copy.position.x += 200
 
 
 
-		circle = new paper.Path.Circle 100, 20
-		circle.fillColor = "blue"
+
 
 		paper.view.draw()
-
-
-
 	# RETURN VALUE!
 	drawing: drawing
 
