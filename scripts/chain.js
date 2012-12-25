@@ -24,8 +24,14 @@ define(['paper'], function(paper) {
       this.paper.setup(this.canvas);
       this.tool = new this.paper.Tool();
       this.size = 10;
-      this.length = 20;
-      this.growing = false;
+      this.length = 10;
+      this.growing = {
+        status: true,
+        max_length: 40,
+        min_length: 10,
+        delta: 2,
+        interval: 1500
+      };
       this.style = {
         strokeColor: "gray",
         strokeWidth: 15,
@@ -61,11 +67,11 @@ define(['paper'], function(paper) {
     };
 
     Chain.prototype.grow_length = function() {
-      if (!this.growing) {
+      if (!this.growing.status || this.length > this.growing.max_length) {
         return false;
       }
-      this.length = this.length + 1;
-      return setTimeout(this.grow_length, 2000);
+      this.length = this.length + this.growing.delta;
+      return setTimeout(this.grow_length, this.growing.interval);
     };
 
     Chain.prototype.difference = function(point_1, point_2) {
@@ -87,20 +93,34 @@ define(['paper'], function(paper) {
     };
 
     Chain.prototype.mouse_move = function(event) {
-      var angle, current, i, next, vector, _i, _ref;
+      var angle, current, i, next, vector, _i, _j, _ref, _ref1;
       if (!this.clicked) {
         return;
       }
-      this.segments[0].point = event.point;
-      for (i = _i = 0, _ref = this.size - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-        next = this.segments[i + 1];
-        current = this.segments[i];
-        angle = (current.point.subtract(next.point)).angle;
-        vector = new paper.Point({
-          angle: angle,
-          length: this.length
-        });
-        next.point = current.point.subtract(vector);
+      if (this.first) {
+        this.segments[0].point = event.point;
+        for (i = _i = 0, _ref = this.size - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+          next = this.segments[i + 1];
+          current = this.segments[i];
+          angle = (current.point.subtract(next.point)).angle;
+          vector = new paper.Point({
+            angle: angle,
+            length: this.length
+          });
+          next.point = current.point.subtract(vector);
+        }
+      } else {
+        this.segments[this.size].point = event.point;
+        for (i = _j = _ref1 = this.size; _ref1 <= 1 ? _j <= 1 : _j >= 1; i = _ref1 <= 1 ? ++_j : --_j) {
+          next = this.segments[i - 1];
+          current = this.segments[i];
+          angle = (current.point.subtract(next.point)).angle;
+          vector = new paper.Point({
+            angle: angle,
+            length: this.length
+          });
+          next.point = current.point.subtract(vector);
+        }
       }
       return this.path.smooth();
     };

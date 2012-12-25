@@ -14,14 +14,17 @@ define ['paper'], (paper) ->
 		
 			# initialize settings
 			@size = 10
-			@length = 20
-			@growing = false
+			@length = 10
+			@growing = 
+				status: true
+				max_length: 40
+				min_length: 10
+				delta: 2
+				interval: 1500
 			@style = 
-
 				strokeColor: "gray"
 				strokeWidth: 15
 				strokeCap: "round"
-
 
 			# initialize the path for the chain
 			@path = new paper.Path()
@@ -69,12 +72,12 @@ define ['paper'], (paper) ->
 
 		grow_length : () =>
 
-			if not @growing 
+			if not @growing.status or @length > @growing.max_length
 				return false
 
-			@length = @length + 1
+			@length = @length + @growing.delta
 
-			return setTimeout @grow_length, 2000
+			return setTimeout @grow_length, @growing.interval
 
 		difference : (point_1, point_2) ->#assumes that we are sending in two points!
 
@@ -105,21 +108,41 @@ define ['paper'], (paper) ->
 
 			if not @clicked
 				return 
+
+			if @first
+
+				# set the first element as the event
+				@segments[0].point = event.point
+				# intiialize the for loop and change all element
+				for i in [0..@size-1]
+
+					next = @segments[i+1] #next element
+					current = @segments[i] #current element
+
+					# remember that there are no point operations in script !== paperscript
+					angle = (current.point.subtract next.point).angle
+
+					vector = new paper.Point {angle: angle, length: @length}
+					next.point = current.point.subtract vector
 			
-			@segments[0].point = event.point
 
-			for i in [0..@size-1]
+			else 
+
+				@segments[@size].point = event.point
+				# intiialize the for loop and change all element
+				for i in [@size..1]
+
+					next = @segments[i-1] #next element
+					current = @segments[i] #current element
+
+					# remember that there are no point operations in script !== paperscript
+					angle = (current.point.subtract next.point).angle
+
+					vector = new paper.Point {angle: angle, length: @length}
+					next.point = current.point.subtract vector
 
 
-				next = @segments[i+1] #next element
-				current = @segments[i] #current element
-
-				# remember that there are no point operations in script !== paperscript
-				angle = (current.point.subtract next.point).angle
-
-				vector = new paper.Point {angle: angle, length: @length}
-				next.point = current.point.subtract vector
-
+			# smooth path
 			@path.smooth()
 		
 		mouse_up : (event) =>
