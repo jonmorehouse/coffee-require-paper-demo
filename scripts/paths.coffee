@@ -1,44 +1,64 @@
 define ['paper', 'rectangle'], (paper, rectangle) ->
 
-	test = () ->
-
-		alert "HELLO WORLD"
-
 	drawing = (canvas) ->
 
+		paper = new paper.PaperScope()
 		paper.setup canvas
 
 		# create a basic rectangle
 		# _rect = new rectangle 0, 0, 200, 200
-
-		..test
-		alert "HELLO WORLD"
-
 		path = new paper.Path()
 
-		path.style = 
+		path.style =
 
-			fillColor: "rgb(255,36,36)"
-			strokeColor: "black"
-			strokeWidth: 8
+			strokeColor: "green"
+			strokeWidth: 2
 
-		path.add new paper.Point 50, 50,
-		path.add new paper.Point 50, 100
-		path.add new paper.Point 100, 50
-		path.add new paper.Point 100, 100
+		path.fullySelected = false
 
-		path.closed = true
+		points = 
 
-		# create a copy and move it!
-		# copy = path.clone()
+			begin : new paper.Point 200, 100
+			end: new paper.Point paper.view.size.width * 0.05, paper.view.size.height
+			through: new paper.Point paper.view.size.width * 0.20, paper.view.size.height * 0.5
 
-		# copy.position.x += 200
+		path.add points.begin
+		path.arcTo points.through, points.end
+		
+
+		# created the stem ... need to create the flower now!
+
+		circle = new paper.Path.Circle points.begin, 20
+		circle.style = path.style
+		circle.strokeColor = "orange"
+		circle.fillColor = "orange"
+
+		# now need to create the brushes
+
+		size = new paper.Size 5, 20
+
+		rectangle = new paper.Rectangle points.end, size
+		bottom = paper.Path.Oval rectangle
+		bottom.fillColor = "#d0aa7b"
+
+		stem = new paper.Path()
+		stem.style = 
+			strokeColor : "#567e37"
+			strokeWidth: 1
+			fillColor: false
+
+		stem.add new paper.Point points.end.x + 3, points.end.y
 
 
 
 
 
+
+
+
+		# draw paper
 		paper.view.draw()
+
 	# RETURN VALUE!
 	drawing: drawing
 
