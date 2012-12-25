@@ -1,4 +1,4 @@
-define ['paper'], (paper) ->
+ define ['paper'], (paper) ->
 
 	class Chain #this is the basic chain class for our project!
 
