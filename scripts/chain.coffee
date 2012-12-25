@@ -11,40 +11,38 @@ define ['paper'], (paper) ->
 			@paper = new paper.PaperScope()
 			@paper.setup @canvas
 			@tool = new @paper.Tool()
-				
-			# initialize the path for the chain
-			@path = new paper.Path()
+		
+			# initialize settings
 			@size = 10
 			@length = 20
-			@segments = @path.segments
+			@growing = false
 			@style = 
 
 				strokeColor: "gray"
 				strokeWidth: 15
 				strokeCap: "round"
 
+
+			# initialize the path for the chain
+			@path = new paper.Path()
+			@segments = @path.segments
 			@path.style = @style
 
+			# create teh path
 			@init()
 			# initialize the proper paper listener functions
 			# the paper constructors take away the this scope so we need to create a reference to it!
 			self = @
 			
-			# initialize the parents!
+			# initialize listners and map to object
 			@tool.onMouseDown = (event) ->
 
-				
-				
 				return self.mouse_down event
 	
-			@tool.onMouseMove = (event) ->
-
-				return self.mouse_move event
-
 			@tool.onMouseUp = (event) ->
 
 				return self.mouse_up event
-
+	
 		init: () =>
 
 			# initialize the path element for the starting point
@@ -63,38 +61,50 @@ define ['paper'], (paper) ->
 
 		grow_length : () =>
 
-			console.log @length
+			if not @growing 
+				return false
+
 			@length = @length + 1
 
 			return setTimeout @grow_length, 2000
 
-		compare_points : (point_1, point_2) ->
+		difference : (point_1, point_2) ->#assumes that we are sending in two points!
 
 			delta_x = point_1.x - point_2.x
-			delta_y = point_2.y - point_2.y
+			delta_y = point_1.y - point_2.y
 
-			delta_x = delta_x if delta_x > 0 else -1 * delta_x
-			delta_y = delta_y if delta_y > 0 else -1 * delta_y
+			delta_x = if delta_x > 0 then delta_x else (-1*delta_x)
+			delta_y = if delta_y > 0 then delta_y else (-1 * delta_y)
 
-			return if delta_x <= @accuracy and delta_y <= @accuracy
 
+			return delta_x + delta_y
 
 		mouse_down : (event) =>	
 
-			@path.style = 
+			delta_first = @difference event.downPoint, @segments[0].point
+			delta_last = @difference event.point, @segments[@size-1].point
 
-				strokeColor: "orange"
-				strokeWidth: 10
+			first = if delta_first < delta_last then true else false
+
+			self = @
+			
+			@tool.onMouseMove = (event) ->
+
+				self.mouse_move event, first
+
 
 			@path.selected = true
 
 		mouse_move : (event) => 
 
+			if not @clicked
+				return 
+
 			@segments[0].point = event.point
 
 			for i in [0..@size-1]
 
-				
+
 				next = @segments[i+1] #next element
 				current = @segments[i] #current element
 
@@ -106,14 +116,15 @@ define ['paper'], (paper) ->
 
 			@path.smooth()
 		
-
 		mouse_up : (event) =>
 
 			@path.style = @style
 
-			@path.selected = false
+			@tool.onMouseMove = (event) ->
 
+				return
 
+			# @path.selected = false
 
 	# return values
 

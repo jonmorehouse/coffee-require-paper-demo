@@ -23,23 +23,21 @@ define(['paper'], function(paper) {
       this.paper = new paper.PaperScope();
       this.paper.setup(this.canvas);
       this.tool = new this.paper.Tool();
-      this.path = new paper.Path();
       this.size = 10;
       this.length = 20;
-      this.segments = this.path.segments;
+      this.growing = false;
       this.style = {
         strokeColor: "gray",
         strokeWidth: 15,
         strokeCap: "round"
       };
+      this.path = new paper.Path();
+      this.segments = this.path.segments;
       this.path.style = this.style;
       this.init();
       self = this;
       this.tool.onMouseDown = function(event) {
         return self.mouse_down(event);
-      };
-      this.tool.onMouseMove = function(event) {
-        return self.mouse_move(event);
       };
       this.tool.onMouseUp = function(event) {
         return self.mouse_up(event);
@@ -58,32 +56,39 @@ define(['paper'], function(paper) {
     };
 
     Chain.prototype.grow_length = function() {
-      console.log(this.length);
+      if (!this.growing) {
+        return false;
+      }
       this.length = this.length + 1;
       return setTimeout(this.grow_length, 2000);
     };
 
-    Chain.prototype.compare_points = function(point_1, point_2) {
+    Chain.prototype.difference = function(point_1, point_2) {
       var delta_x, delta_y;
       delta_x = point_1.x - point_2.x;
-      delta_y = point_2.y - point_2.y;
-      delta_x = delta_x(delta_x > 0 ? void 0 : -1 * delta_x);
-      delta_y = delta_y(delta_y > 0 ? void 0 : -1 * delta_y);
-      if (delta_x <= this.accuracy && delta_y <= this.accuracy) {
-
-      }
+      delta_y = point_1.y - point_2.y;
+      delta_x = delta_x > 0 ? delta_x : -1 * delta_x;
+      delta_y = delta_y > 0 ? delta_y : -1 * delta_y;
+      return delta_x + delta_y;
     };
 
     Chain.prototype.mouse_down = function(event) {
-      this.path.style = {
-        strokeColor: "orange",
-        strokeWidth: 10
+      var delta_first, delta_last, first, self;
+      delta_first = this.difference(event.downPoint, this.segments[0].point);
+      delta_last = this.difference(event.point, this.segments[this.size - 1].point);
+      first = delta_first < delta_last ? true : false;
+      self = this;
+      this.tool.onMouseMove = function(event) {
+        return self.mouse_move(event, first);
       };
       return this.path.selected = true;
     };
 
     Chain.prototype.mouse_move = function(event) {
       var angle, current, i, next, vector, _i, _ref;
+      if (!this.clicked) {
+        return;
+      }
       this.segments[0].point = event.point;
       for (i = _i = 0, _ref = this.size - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         next = this.segments[i + 1];
@@ -100,7 +105,7 @@ define(['paper'], function(paper) {
 
     Chain.prototype.mouse_up = function(event) {
       this.path.style = this.style;
-      return this.path.selected = false;
+      return this.tool.onMouseMove = function(event) {};
     };
 
     return Chain;
