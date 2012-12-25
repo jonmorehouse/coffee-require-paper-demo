@@ -8,7 +8,7 @@ define(['paper'], function(paper) {
     function Chain(canvas) {
       this.mouse_up = __bind(this.mouse_up, this);
 
-      this.mouse_over = __bind(this.mouse_over, this);
+      this.mouse_move = __bind(this.mouse_move, this);
 
       this.mouse_down = __bind(this.mouse_down, this);
 
@@ -22,21 +22,22 @@ define(['paper'], function(paper) {
       this.path = new paper.Path();
       this.size = 25;
       this.segments = this.path.segments;
-      this.path.style = {
-        strokeColor: "blue",
-        strokeWidth: 20,
+      this.style = {
+        strokeColor: "gray",
+        strokeWidth: 15,
         strokeCap: "round"
       };
+      this.path.style = this.style;
       this.init();
       self = this;
-      this.tool.onMouseDown = function() {
-        return self.mouse_down();
+      this.tool.onMouseDown = function(event) {
+        return self.mouse_down(event);
       };
-      this.tool.onMouseOver = function() {
-        return self.mouse_over();
+      this.tool.onMouseMove = function(event) {
+        return self.mouse_move(event);
       };
-      this.tool.onMouseUp = function() {
-        return self.mouse_up();
+      this.tool.onMouseUp = function(event) {
+        return self.mouse_up(event);
       };
     }
 
@@ -50,12 +51,33 @@ define(['paper'], function(paper) {
       return this.tool.onMouseDown = this.paper.onMouseDown;
     };
 
-    Chain.prototype.mouse_down = function(event) {};
+    Chain.prototype.mouse_down = function(event) {
+      this.path.style = {
+        strokeColor: "orange",
+        strokeWidth: 10
+      };
+      return this.path.selected = true;
+    };
 
-    Chain.prototype.mouse_over = function(event) {};
+    Chain.prototype.mouse_move = function(event) {
+      var angle, current, i, next, vector, _i, _ref;
+      this.segments[0].point = event.point;
+      for (i = _i = 0, _ref = this.size - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        next = this.segments[i + 1];
+        current = this.segments[i];
+        angle = (current.point.subtract(next.point)).angle;
+        vector = new paper.Point({
+          angle: angle,
+          length: 35
+        });
+        next.point = current.point.subtract(vector);
+      }
+      return this.path.smooth();
+    };
 
     Chain.prototype.mouse_up = function(event) {
-      return console.log("HELLO WORLD FROM MOUSE UP!!!");
+      this.path.style = this.style;
+      return this.path.selected = false;
     };
 
     return Chain;

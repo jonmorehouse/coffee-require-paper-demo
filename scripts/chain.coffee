@@ -14,11 +14,13 @@ define ['paper'], (paper) ->
 			@path = new paper.Path()
 			@size = 25
 			@segments = @path.segments
-			@path.style = 
+			@style = 
 
-				strokeColor: "blue"
-				strokeWidth: 20
+				strokeColor: "gray"
+				strokeWidth: 15
 				strokeCap: "round"
+
+			@path.style = @style
 
 			@init()
 			# initialize the proper paper listener functions
@@ -26,17 +28,17 @@ define ['paper'], (paper) ->
 			self = @
 			
 			# initialize the parents!
-			@tool.onMouseDown = () ->
+			@tool.onMouseDown = (event) ->
 
-				return self.mouse_down()
+				return self.mouse_down event
 	
-			@tool.onMouseOver = () ->
+			@tool.onMouseMove = (event) ->
 
-				return self.mouse_over()
+				return self.mouse_move event
 
-			@tool.onMouseUp = () ->
+			@tool.onMouseUp = (event) ->
 
-				return self.mouse_up()
+				return self.mouse_up event
 
 		init: () =>
 
@@ -53,21 +55,42 @@ define ['paper'], (paper) ->
 			# initialize listener functions
 			@tool.onMouseDown = @paper.onMouseDown
 
-		mouse_down : (event) =>
+		mouse_down : (event) =>	
 
+			@path.style = 
 
+				strokeColor: "orange"
+				strokeWidth: 10
 
-		mouse_over: (event) => 
+			@path.selected = true
 
-			
+		mouse_move : (event) => 
 
-		mouse_up: (event) =>
+			@segments[0].point = event.point
 
-			console.log "HELLO WORLD FROM MOUSE UP!!!"
+			for i in [0..@size-1]
+
+				
+				next = @segments[i+1] #next element
+				current = @segments[i] #current element
+
+				# remember that there are no point operations in script !== paperscript
+				angle = (current.point.subtract next.point).angle
+
+				vector = new paper.Point {angle: angle, length: 35}
+				next.point = current.point.subtract vector
+
+			@path.smooth()
+		
+
+		mouse_up : (event) =>
+
+			@path.style = @style
+
+			@path.selected = false
 
 
 
 	# return values
 
 	Chain: Chain
-
