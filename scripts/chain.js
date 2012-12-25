@@ -12,9 +12,9 @@ define(['paper'], function(paper) {
 
       this.mouse_down = __bind(this.mouse_down, this);
 
-      this.test = __bind(this.test, this);
-
       this.init = __bind(this.init, this);
+
+      var self;
       this.canvas = canvas;
       this.paper = new paper.PaperScope();
       this.paper.setup(this.canvas);
@@ -28,8 +28,15 @@ define(['paper'], function(paper) {
         strokeCap: "round"
       };
       this.init();
+      self = this;
       this.tool.onMouseDown = function() {
-        return alert(this.size);
+        return self.mouse_down();
+      };
+      this.tool.onMouseOver = function() {
+        return self.mouse_over();
+      };
+      this.tool.onMouseUp = function() {
+        return self.mouse_up();
       };
     }
 
@@ -43,17 +50,9 @@ define(['paper'], function(paper) {
       return this.tool.onMouseDown = this.paper.onMouseDown;
     };
 
-    Chain.prototype.test = function() {
-      return alert(this.size);
-    };
+    Chain.prototype.mouse_down = function(event) {};
 
-    Chain.prototype.mouse_down = function(event) {
-      return console.log("HELLO WORLD FROM MOUSE DOWN!");
-    };
-
-    Chain.prototype.mouse_over = function(event) {
-      return console.log("HELLO WORLD FROM MOUSE OVER!");
-    };
+    Chain.prototype.mouse_over = function(event) {};
 
     Chain.prototype.mouse_up = function(event) {
       return console.log("HELLO WORLD FROM MOUSE UP!!!");

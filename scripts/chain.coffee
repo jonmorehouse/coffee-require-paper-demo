@@ -21,11 +21,22 @@ define ['paper'], (paper) ->
 				strokeCap: "round"
 
 			@init()
-
+			# initialize the proper paper listener functions
+			# the paper constructors take away the this scope so we need to create a reference to it!
+			self = @
+			
+			# initialize the parents!
 			@tool.onMouseDown = () ->
 
-				alert @size
+				return self.mouse_down()
+	
+			@tool.onMouseOver = () ->
 
+				return self.mouse_over()
+
+			@tool.onMouseUp = () ->
+
+				return self.mouse_up()
 
 		init: () =>
 
@@ -42,24 +53,13 @@ define ['paper'], (paper) ->
 			# initialize listener functions
 			@tool.onMouseDown = @paper.onMouseDown
 
-
-		test: () =>
-
-			alert @size
-
-
-			# @tool.onMouseOver = (event) -> return @mouse_over event 
-
-			# @tool.onMouseUp = (event) -> return @mouse_up event
-
-		
 		mouse_down : (event) =>
 
-			console.log "HELLO WORLD FROM MOUSE DOWN!"
+
 
 		mouse_over: (event) => 
 
-			console.log "HELLO WORLD FROM MOUSE OVER!"
+			
 
 		mouse_up: (event) =>
 
