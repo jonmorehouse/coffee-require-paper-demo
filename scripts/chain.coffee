@@ -28,6 +28,10 @@ define ['paper'], (paper) ->
 			@segments = @path.segments
 			@path.style = @style
 
+			# initialize click settings
+			@clicked = false
+			@first = true
+
 			# create teh path
 			@init()
 			# initialize the proper paper listener functions
@@ -38,7 +42,11 @@ define ['paper'], (paper) ->
 			@tool.onMouseDown = (event) ->
 
 				return self.mouse_down event
-	
+		
+			@tool.onMouseMove = (event)->
+
+				return self.mouse_move event
+
 			@tool.onMouseUp = (event) ->
 
 				return self.mouse_up event
@@ -81,25 +89,23 @@ define ['paper'], (paper) ->
 
 		mouse_down : (event) =>	
 
+			@clicked = true
+			
+			# determine whether we clicked near the beginning 
 			delta_first = @difference event.downPoint, @segments[0].point
 			delta_last = @difference event.point, @segments[@size-1].point
 
-			first = if delta_first < delta_last then true else false
+			# set this globally in the object
+			@first = if delta_first < delta_last then true else false
 
-			self = @
-			
-			@tool.onMouseMove = (event) ->
-
-				self.mouse_move event, first
-
-
+			# path is selected variable
 			@path.selected = true
 
 		mouse_move : (event) => 
 
 			if not @clicked
 				return 
-
+			
 			@segments[0].point = event.point
 
 			for i in [0..@size-1]
@@ -119,12 +125,9 @@ define ['paper'], (paper) ->
 		mouse_up : (event) =>
 
 			@path.style = @style
+			@clicked = false
 
-			@tool.onMouseMove = (event) ->
-
-				return
-
-			# @path.selected = false
+			@path.selected = false
 
 	# return values
 

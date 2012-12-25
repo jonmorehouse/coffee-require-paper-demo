@@ -34,10 +34,15 @@ define(['paper'], function(paper) {
       this.path = new paper.Path();
       this.segments = this.path.segments;
       this.path.style = this.style;
+      this.clicked = false;
+      this.first = true;
       this.init();
       self = this;
       this.tool.onMouseDown = function(event) {
         return self.mouse_down(event);
+      };
+      this.tool.onMouseMove = function(event) {
+        return self.mouse_move(event);
       };
       this.tool.onMouseUp = function(event) {
         return self.mouse_up(event);
@@ -73,14 +78,11 @@ define(['paper'], function(paper) {
     };
 
     Chain.prototype.mouse_down = function(event) {
-      var delta_first, delta_last, first, self;
+      var delta_first, delta_last;
+      this.clicked = true;
       delta_first = this.difference(event.downPoint, this.segments[0].point);
       delta_last = this.difference(event.point, this.segments[this.size - 1].point);
-      first = delta_first < delta_last ? true : false;
-      self = this;
-      this.tool.onMouseMove = function(event) {
-        return self.mouse_move(event, first);
-      };
+      this.first = delta_first < delta_last ? true : false;
       return this.path.selected = true;
     };
 
@@ -105,7 +107,8 @@ define(['paper'], function(paper) {
 
     Chain.prototype.mouse_up = function(event) {
       this.path.style = this.style;
-      return this.tool.onMouseMove = function(event) {};
+      this.clicked = false;
+      return this.path.selected = false;
     };
 
     return Chain;
