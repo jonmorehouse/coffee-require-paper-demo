@@ -1,15 +1,15 @@
-define ['paths', 'test'], (paths, test) ->
+define ['paths', 'chain'], (paths, chain) ->
 
 	# initialize a paper test suite
 	# test = new paths.drawing $('div')
 	homepage = () ->
 
-		canvas = document.getElementById "drawing_1"
 
+
+		canvas = document.getElementById "drawing_2"
 		drawing = new paths.drawing canvas
 
-		test.draw()
-
+		test = new chain.Chain $('#drawing_1')[0]
 	
 
 	
