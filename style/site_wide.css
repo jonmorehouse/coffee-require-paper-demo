@@ -1,6 +1,6 @@
 body {
   background-color: rgba(17, 10, 20, 0.1);
-  padding: 1em 5em 1em 5em; }
+  padding: 1em 3em 1em 3em; }
 
 #header {
   position: relative;
@@ -12,8 +12,13 @@ body {
     text-align: center;
     font-family: helvetica; }
 
+#github_logo {
+  position: fixed;
+  left: 0;
+  top: 0; }
+
 canvas {
-  height: 20em;
+  height: 25em;
   width: 100%;
   background-color: white;
   border-radius: 2em; }

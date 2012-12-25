@@ -13,11 +13,11 @@ define ['paper'], (paper) ->
 			@tool = new @paper.Tool()
 		
 			# initialize settings
-			@size = 10
+			@size = 25
 			@length = 10
 			@growing = 
 				status: true
-				max_length: 40
+				max_length: 50
 				min_length: 10
 				delta: 2
 				interval: 1500
@@ -53,15 +53,18 @@ define ['paper'], (paper) ->
 			@tool.onMouseUp = (event) ->
 
 				return self.mouse_up event
-	
+		
 		init: () =>
 
 			# initialize the path element for the starting point
 			start = @paper.view.center
+			delta_x = @paper.view.size.width / @size
+			@length = delta_x * 0.5
 
+			# want the end point to be halfway across the other element
 			# initialize the path segments
 			for i in [0..@size]	
-				@path.add new @paper.Point start.x + i * 10, start.y
+				@path.add new @paper.Point start.x + i * delta_x, start.y
 
 			# actually draw the view on the page
 			@paper.view.draw()

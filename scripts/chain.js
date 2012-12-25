@@ -23,11 +23,11 @@ define(['paper'], function(paper) {
       this.paper = new paper.PaperScope();
       this.paper.setup(this.canvas);
       this.tool = new this.paper.Tool();
-      this.size = 10;
+      this.size = 25;
       this.length = 10;
       this.growing = {
         status: true,
-        max_length: 40,
+        max_length: 50,
         min_length: 10,
         delta: 2,
         interval: 1500
@@ -56,10 +56,12 @@ define(['paper'], function(paper) {
     }
 
     Chain.prototype.init = function() {
-      var i, start, _i, _ref;
+      var delta_x, i, start, _i, _ref;
       start = this.paper.view.center;
+      delta_x = this.paper.view.size.width / this.size;
+      this.length = delta_x * 0.5;
       for (i = _i = 0, _ref = this.size; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-        this.path.add(new this.paper.Point(start.x + i * 10, start.y));
+        this.path.add(new this.paper.Point(start.x + i * delta_x, start.y));
       }
       this.paper.view.draw();
       this.grow_length();
