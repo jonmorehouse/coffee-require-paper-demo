@@ -2,6 +2,8 @@ define ['paper'], (paper) ->
 
 	class Chain #this is the basic chain class for our project!
 
+		accuracy : 5
+
 		constructor: (canvas) ->
 
 			# initialize canvas
@@ -12,7 +14,8 @@ define ['paper'], (paper) ->
 				
 			# initialize the path for the chain
 			@path = new paper.Path()
-			@size = 25
+			@size = 10
+			@length = 20
 			@segments = @path.segments
 			@style = 
 
@@ -30,6 +33,8 @@ define ['paper'], (paper) ->
 			# initialize the parents!
 			@tool.onMouseDown = (event) ->
 
+				
+				
 				return self.mouse_down event
 	
 			@tool.onMouseMove = (event) ->
@@ -51,9 +56,28 @@ define ['paper'], (paper) ->
 
 			# actually draw the view on the page
 			@paper.view.draw()
+			@grow_length()
 
 			# initialize listener functions
 			@tool.onMouseDown = @paper.onMouseDown
+
+		grow_length : () =>
+
+			console.log @length
+			@length = @length + 1
+
+			return setTimeout @grow_length, 2000
+
+		compare_points : (point_1, point_2) ->
+
+			delta_x = point_1.x - point_2.x
+			delta_y = point_2.y - point_2.y
+
+			delta_x = delta_x if delta_x > 0 else -1 * delta_x
+			delta_y = delta_y if delta_y > 0 else -1 * delta_y
+
+			return if delta_x <= @accuracy and delta_y <= @accuracy
+
 
 		mouse_down : (event) =>	
 
@@ -77,7 +101,7 @@ define ['paper'], (paper) ->
 				# remember that there are no point operations in script !== paperscript
 				angle = (current.point.subtract next.point).angle
 
-				vector = new paper.Point {angle: angle, length: 35}
+				vector = new paper.Point {angle: angle, length: @length}
 				next.point = current.point.subtract vector
 
 			@path.smooth()

@@ -5,12 +5,16 @@ define(['paper'], function(paper) {
   var Chain;
   Chain = (function() {
 
+    Chain.prototype.accuracy = 5;
+
     function Chain(canvas) {
       this.mouse_up = __bind(this.mouse_up, this);
 
       this.mouse_move = __bind(this.mouse_move, this);
 
       this.mouse_down = __bind(this.mouse_down, this);
+
+      this.grow_length = __bind(this.grow_length, this);
 
       this.init = __bind(this.init, this);
 
@@ -20,7 +24,8 @@ define(['paper'], function(paper) {
       this.paper.setup(this.canvas);
       this.tool = new this.paper.Tool();
       this.path = new paper.Path();
-      this.size = 25;
+      this.size = 10;
+      this.length = 20;
       this.segments = this.path.segments;
       this.style = {
         strokeColor: "gray",
@@ -48,7 +53,25 @@ define(['paper'], function(paper) {
         this.path.add(new this.paper.Point(start.x + i * 10, start.y));
       }
       this.paper.view.draw();
+      this.grow_length();
       return this.tool.onMouseDown = this.paper.onMouseDown;
+    };
+
+    Chain.prototype.grow_length = function() {
+      console.log(this.length);
+      this.length = this.length + 1;
+      return setTimeout(this.grow_length, 2000);
+    };
+
+    Chain.prototype.compare_points = function(point_1, point_2) {
+      var delta_x, delta_y;
+      delta_x = point_1.x - point_2.x;
+      delta_y = point_2.y - point_2.y;
+      delta_x = delta_x(delta_x > 0 ? void 0 : -1 * delta_x);
+      delta_y = delta_y(delta_y > 0 ? void 0 : -1 * delta_y);
+      if (delta_x <= this.accuracy && delta_y <= this.accuracy) {
+
+      }
     };
 
     Chain.prototype.mouse_down = function(event) {
@@ -68,7 +91,7 @@ define(['paper'], function(paper) {
         angle = (current.point.subtract(next.point)).angle;
         vector = new paper.Point({
           angle: angle,
-          length: 35
+          length: this.length
         });
         next.point = current.point.subtract(vector);
       }
